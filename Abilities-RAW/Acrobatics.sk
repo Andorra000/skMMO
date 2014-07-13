@@ -1,0 +1,84 @@
+options:
+						# ACROBATICS
+		#The Acrobatics Ability allows the player to have a chance of Dodging, rolling,
+		#or gracefully landing attacks. Acrobatics is apart of the core 4 (Mining,
+		#Woodcutting, Excavation, Acrobatics) and is heavily recommended on just about
+		#any server using the falling mechanics (RPGs, Minigames, etc.) Acrobatics comes
+		#with 3 skills, (Dodge, Graceful Landing, Roll) Dodge allows the player to dodge
+		#any attack or damage cause. Graceful Landing allows the player to sneak when 
+		#they fall for a chance of reduced damage. (at a low height). Roll, allows the
+		#player to just have a chance of reducing or even depleting fall damage. Disabling
+		#acrobatics will disable Roll, Graceful Landing, and Dodge. As well as the Acrobatics
+		#Leveling System.
+
+	ability.acrobatics: true
+	
+	acrobatics.damage.reward: 180
+	acrobatics.levelup.amount: 200
+	
+command /acrobatics:
+	trigger:
+		if {@ability.acrobatics} is true:	
+			send "&c-----[]&aAcrobatics&c[]-----"
+			send "&8XP GAIN: &fFalling"
+			send "&8LVL: &a%{skmmo::%uuid of player%::acrobatics::level::level}% &3XP&e(&6%{skmmo::%uuid of player%::acrobatics::xp}%&e/&6%{skmmo::%uuid of player%::acrobatics::level::amount}%&e)"
+			send "&c-----[]&aEffects&c[]-----"
+			send "&3Roll: &aReduces or Negates fall damage"
+			send "&3Graceful Roll: &aTwice as effective as normal Roll"
+			send "&3Dodge: &aReduces Damage by Half"
+			send "&c-----[]&aYour Stats&c[]-----"
+			send "&cRoll Chance: &e%{skmmo::%uuid of player%::acrobatics::skills::roll::chance}%"
+			send "&cGraceful Roll Chance: &e%{skmmo::%uuid of player%::acrobatics::skills::gracefullanding::chance}%"
+			send "&cDodge Chance: &e%{skmmo::%uuid of player%::acrobatics::skills::dodge::chance}%"
+		else:
+			send "&7[&6skMMO&7] &cThis Ability &o(Acrobatics) &cis disabled."
+			
+#-------------------------------------------------------#
+#			ACROBATICS			#
+#-------------------------------------------------------#
+on damage:
+	damage cause is fall:
+		victim is a player
+		if {@ability.acrobatics} is true:
+			set {_acroDamage} to the damage
+			set {_acroDamage} to {_acroDamage} * {@acrobatics.damage.reward}
+			add {_acroDamage} to {skmmo::%uuid of victim%::acrobatics::xp}
+			make console execute command "skmmo check %victim% Acrobatics"
+			
+
+#-------------------------------------------------------#
+#		GRACEFUL LANDING/ROLL			#
+#-------------------------------------------------------#
+on damage:
+	victim is a player
+	damage cause is fall:
+		damage is less than 10:
+			chance of {skmmo::%uuid of victim%::acrobatics::skills::gracefullanding::chance}%:
+				cancel event
+				send "**GRACEFUL LANDING**" to victim
+				stop
+		else:
+			chance of {skmmo::%uuid of victim%::acrobatics::skills::roll::chance}%:
+				cancel event
+				send "**ROLL**" to victim
+				stop
+			chance of {skmmo::%uuid of victim%::acrobatics::skills::dodge::chance}%:
+				send "**DODGE**" to victim
+				set damage to damage * 0.5
+				stop
+#-------------------------------------------------------#
+#			DODGE				#
+#-------------------------------------------------------#
+on damage:
+	victim is a player
+	damage isn't caused by fall:
+		chance of {skmmo::%uuid of victim%::acrobatics::skills::dodge::chance}%:
+			send "**DODGE**" to victim
+			set damage to damage * 0.5
+			
+#	{skmmo::%uuid of player%::acrobatics::xp} = 0
+#	{skmmo::%uuid of player%::acrobatics::level::level} = 0
+#	{skmmo::%uuid of player%::acrobatics::level::amount} = 1200
+#	{skmmo::%uuid of player%::acrobatics::skills::roll::chance} = 0
+#	{skmmo::%uuid of player%::acrobatics::skills::gracefullanding::chance} = 0
+#	{skmmo::%uuid of player%::acrobatics::skills::dodge::chance} = 0
