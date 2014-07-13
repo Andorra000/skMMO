@@ -1,0 +1,35 @@
+#SALVAGE
+	level.salvage.use: 600
+
+on right click on gold block:
+	{@ability.repair} is true
+	if {@ability.salvage} is true:
+		if {skmmo::%uuid of player%::repair::level::level} is more than or equal to {@level.salvage.use}:
+			set {_repDur} to damage of tool of player
+			if {_repDur} is 0:
+				if player's tool isn't a hoe or a sword or a shovel or an axe or a pickaxe or boots or leggings or a chestplate or a helmet or a fishing rod or shears or a bow:
+					stop
+
+	#Yes. This does pull from variables from Repair.
+	#In a few updates I'll make it much easier to make custom items.
+
+				send "&eSalvaging your %{_repTool}%"
+				if player's tool is a sword or a sword:
+					drop 2 of {_repMat} at the clicked block
+				if player's tool is an pickaxe or an axe:
+					drop 3 of {_repMat} at the clicked block
+				if player's tool is an shovel:
+					drop 1 of {_repMat} at the clicked block
+				if player's tool is an helmet:
+					drop 5 of {_repMat} at the clicked block
+				if player's tool is an chestplate:
+					drop 8 of {_repMat} at the clicked block
+				if player's tool is an leggings:
+					drop 7 of {_repMat} at the clicked block
+				if player's tool is an boots:
+					drop 4 of {_repMat} at the clicked block			
+			else:
+				send "&cYour tool must be at full durability to repair."
+		else:
+			send "&cYou need to be level %{@level.salvage.use}%+ in Repair!"
+
