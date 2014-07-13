@@ -1,4 +1,4 @@
-# REPAIR & ARCANE FORGING
+# REPAIR
 options:
   	ability.repair: true
   	repair.levelup.amount: 100
