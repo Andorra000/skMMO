@@ -1,0 +1,957 @@
+# REPAIR & ARCANE FORGING
+options:
+  	ability.repair: true
+  	repair.levelup.amount: 100
+	repair.skill.arcaneforging: true
+	level.unlock.diamonds: 50
+	
+command /repair:
+	trigger:
+		if {@ability.repair} is true: 
+			send "&c-----[]&aRepair&c[]-----"
+			send "&8XP GAIN: &fRepairing"
+			send "&8LVL: &a%{skmmo::%uuid of player%::repair::level::level}% &3XP&e(&6%{skmmo::%uuid of player%::repair::xp}%&e/&6%{skmmo::%uuid of player%::repair::level::amount}%&e)"
+			send "&c-----[]&aEffects&c[]-----"
+			send "&3Repair: &aRepair Tools & Armor"
+			send "&3Repair Mastery: &aIncreased repair Amount"
+			send "&3Diamond Repair (50+ SKILL): Repaid Diamond Tools and Armor"
+			send "&3Arcane Forging: &aRepair magic items"
+			send "&c-----[]&cYour Stats&c[]-----"
+			send "&cRepair Mastery: &eExtra %{skmmo::%uuid of player%::repair::skills::mastery}% durability restored"
+			send "&cArcane Forging: &eRank %{skmmo::%uuid of player%::repair::skills::arcaneforging::level}%/8"
+			send "&7AF Destroy Rate: &e%{skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%"
+			send "&7AF Downgrade Chance: &e%{skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%"
+		else:
+			send "&7[&6skMMO&7] &cThis Ability &o(Repair) &cis disabled."
+			
+#-------------------------------------------------------#
+#		   REPAIR				#
+#-------------------------------------------------------#
+on right click on iron block or gold block:
+	if {@ability.repair} is true:
+		set {_repDur} to damage of tool of player
+		if {_repDur} is 0:
+			if player's tool isn't a hoe or a sword or a shovel or an axe or a pickaxe or boots or leggings or a chestplate or a helmet or a fishing rod or shears or a bow:
+				stop
+			else:
+				if clicked block is iron block:
+					send "This item has full durability"
+					stop 
+		else:
+# Adding items with durability is simple, repRep is the amount the tool will be repaired, RepTool is the name of the tool (for future reference)
+# While RepMat is the material needed to repair, and repMul is the multiplier for rewarding experience points.
+	#IRON TOOLS
+			if player's tool is an iron sword:
+				set {_repRep} to 126
+				set {_repTool} to "Iron Sword"
+				set {_repMat} to Iron Ingot
+				set {_repMul} to 7
+
+		#-You can also make custom (Repairable) Items this way.
+#				if the player's tool is named "Bane of Dragons":
+#					set {_repRep} to 63
+#					set {_repTool} to "Bane of Dragons"
+#					set {_repMat} to Golden Nugget named "Dragon's Tooth"
+#					set {_repMul} to 8
+		#-Be careful with the multiplier, it multiplies the amount repaired. (It can get high fast!)
+			
+			if player's tool is an iron shovel:
+				set {_repRep} to 251
+				set {_repTool} to "Iron Shovel"
+				set {_repMat} to iron ingot
+				set {_repMul} to 4
+			if player's tool is an iron axe:
+				set {_repRep} to 84
+				set {_repTool} to "Iron Axe"
+				set {_repMat} to iron ingot
+				set {_repMul} to 10
+			if player's tool is an iron pickaxe:
+				set {_repRep} to 84
+				set {_repTool} to "Iron Pickaxe"
+				set {_repMat} to iron ingot
+				set {_repMul} to 10
+			if player's tool is an iron hoe:
+				set {_repRep} to 126
+				set {_repTool} to "Iron Hoe"
+				set {_repMat} to iron ingot
+				set {_repMul} to 7
+	#GOLD TOOLS
+			if player's tool is an golden sword:
+				set {_repRep} to 17
+				set {_repTool} to "Golden Sword"
+				set {_repMat} to gold ingot
+				set {_repMul} to 54
+			if player's tool is an golden shovel:
+				set {_repRep} to 33
+				set {_repTool} to "Golden Shovel"
+				set {_repMat} to gold ingot
+				set {_repMul} to 27
+			if player's tool is an golden axe:
+				set {_repRep} to 11
+				set {_repTool} to "Golden Axe"
+				set {_repMat} to gold ingot
+				set {_repMul} to 80
+			if player's tool is an golden pickaxe:
+				set {_repRep} to 11
+				set {_repTool} to "Golden Pickaxe"
+				set {_repMat} to gold ingot
+				set {_repMul} to 80
+			if player's tool is an golden hoe:
+				set {_repRep} to 17
+				set {_repTool} to "Golden Hoe"
+				set {_repMat} to gold ingot
+				set {_repMul} to 60
+	#DIAMOND TOOLS
+			if player's tool is an diamond sword:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 731
+					set {_repTool} to "Diamond Sword"
+					set {_repMat} to diamond
+					set {_repMul} to 7
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Sword!"
+					stop
+			if player's tool is an diamond shovel:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 1562
+					set {_repTool} to "Diamond Shovel"
+					set {_repMat} to diamond
+					set {_repMul} to 4
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Shovel!"
+					stop
+			if player's tool is an diamond axe:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 521
+					set {_repTool} to "Diamond Axe"
+					set {_repMat} to diamond
+					set {_repMul} to 10
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Axe!"
+					stop
+			if player's tool is an diamond pickaxe:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 521
+					set {_repTool} to "Diamond Pickaxe"
+					set {_repMat} to diamond
+					set {_repMul} to 10
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Pickaxe!"
+					stop
+			if player's tool is an diamond hoe:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 731
+					set {_repTool} to "Diamond Hoe"
+					set {_repMat} to diamond
+					set {_repMul} to 7
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Hoe!"
+					stop
+	#STONE TOOLS
+			if player's tool is an stone sword:
+				set {_repRep} to 66
+				set {_repTool} to "Stone Sword"
+				set {_repMat} to stone
+				set {_repMul} to 1
+			if player's tool is an stone shovel:
+				set {_repRep} to 132
+				set {_repTool} to "Stone Shovel"
+				set {_repMat} to stone
+				set {_repMul} to 1
+			if player's tool is an stone axe:
+				set {_repRep} to 44
+				set {_repTool} to "Stone Axe"
+				set {_repMat} to stone
+				set {_repMul} to 1
+			if player's tool is an stone pickaxe:
+				set {_repRep} to 44
+				set {_repTool} to "Stone Pickaxe"
+				set {_repMat} to stone
+				set {_repMul} to 1
+			if player's tool is an stone hoe:
+				set {_repRep} to 66
+				set {_repTool} to "Stone Hoe"
+				set {_repMat} to stone
+				set {_repMul} to 1
+	#Wood Tools
+			if player's tool is an wooden sword:
+				set {_repRep} to 30
+				set {_repTool} to "Wooden Sword"
+				set {_repMat} to wood
+				set {_repMul} to 1
+			if player's tool is an wooden shovel:
+				set {_repRep} to 60
+				set {_repTool} to "Wooden Shovel"
+				set {_repMat} to wood
+				set {_repMul} to 1
+			if player's tool is an wooden axe:
+				set {_repRep} to 20
+				set {_repTool} to "Wooden Axe"
+				set {_repMat} to wood
+				set {_repMul} to 1
+			if player's tool is an wooden pickaxe:
+				set {_repRep} to 20
+				set {_repTool} to "Wooden Pickaxe"
+				set {_repMat} to wood
+				set {_repMul} to 1
+			if player's tool is an wooden hoe:
+				set {_repRep} to 30
+				set {_repTool} to "Wooden Hoe"
+				set {_repMat} to wood
+				set {_repMul} to 1
+
+	# Leather Armor
+			if player's tool is an leather chestplate:
+				set {_repRep} to 11
+				set {_repTool} to "Leather Chestplate"
+				set {_repMat} to leather
+				set {_repMul} to 1
+			if player's tool is an leather helmet:
+				set {_repRep} to 12
+				set {_repTool} to "Leather Helmet"
+				set {_repMat} to leather
+				set {_repMul} to 1
+			if player's tool is an leather leggings:
+				set {_repRep} to 11
+				set {_repTool} to "Leather Leggings"
+				set {_repMat} to leather
+				set {_repMul} to 1
+			if player's tool is an leather boots:
+				set {_repRep} to 17
+				set {_repTool} to "Leather Boots"
+				set {_repMat} to leather 
+				set {_repMul} to 1
+	# Iron Armor
+			if player's tool is an iron helmet:
+				set {_repRep} to 33
+				set {_repTool} to "Iron Helmet"
+				set {_repMat} to iron ingot
+				set {_repMul} to 20
+			if player's tool is an iron chestplate:
+				set {_repRep} to 30
+				set {_repTool} to "Iron Chestplate"
+				set {_repMat} to iron ingot
+				set {_repMul} to 20
+			if player's tool is an iron leggings:
+				set {_repRep} to 33
+				set {_repTool} to "Iron Leggings"
+				set {_repMat} to iron ingot
+				set {_repMul} to 20
+			if player's tool is an iron boots:
+				set {_repRep} to 49
+				set {_repTool} to "Iron Boots"
+				set {_repMat} to iron ingot
+				set {_repMul} to 20
+	# Gold Armor
+			if player's tool is an golden helmet:
+				set {_repRep} to 16
+				set {_repTool} to "Golden Helmet"
+				set {_repMat} to gold ingot
+				set {_repMul} to 40
+			if player's tool is an golden chestplate:
+				set {_repRep} to 15
+				set {_repTool} to "Golden Chestplate"
+				set {_repMat} to gold ingot
+				set {_repMul} to 40
+			if player's tool is an golden leggings:
+				set {_repRep} to 15
+				set {_repTool} to "Golden Leggings"
+				set {_repMat} to gold ingot
+				set {_repMul} to 40
+			if player's tool is an golden boots:
+				set {_repRep} to 23
+				set {_repTool} to "Golden Boots"
+				set {_repMat} to gold ingot
+				set {_repMul} to 40
+
+	# Diamond Armor
+			if player's tool is an diamond helmet:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 73
+					set {_repTool} to "Diamond Helmet"
+					set {_repMat} to diamond
+					set {_repMul} to 60
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Helmet!"
+					stop
+			if player's tool is an diamond chestplate:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 66
+					set {_repTool} to "Diamond Chestplate"
+					set {_repMat} to diamond
+					set {_repMul} to 60
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Chestplate!"
+					stop
+			if player's tool is an diamond leggings:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 71
+					set {_repTool} to "Diamond Leggings"
+					set {_repMat} to diamond
+					set {_repMul} to 60
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Leggings!"
+					stop
+			if player's tool is an diamond boots:
+				if {skmmo::%uuid of player%::repair::skills::repair::diamond} is true:
+					set {_repRep} to 107
+					set {_repTool} to "Diamond Boots"
+					set {_repMat} to diamond
+					set {_repMul} to 60
+				else:
+					send "&cYou Must be Level 50+ to Repair your Diamond Boots!"
+					stop
+			if player's tool is an fishing rod:
+				set {_repRep} to 32
+				set {_repTool} to "Fishing Rod"
+				set {_repMat} to string
+				set {_repMul} to 1
+
+			if player's tool is shears:
+				set {_repRep} to 119
+				set {_repTool} to "Shears"
+				set {_repMat} to iron ingot
+				set {_repMul} to 1
+
+			if player's tool is a bow:
+				set {_repRep} to 128
+				set {_repTool} to "Wooden Bow"
+				set {_repMat} to string
+				set {_repMul} to 1
+			clicked block is iron block
+			if player has 1 of {_repMat}:
+				set {_repRep} to {_repRep} * {skmmo::%uuid of player%::repair::skills::mastery}
+				set {_repRep} to round({_repRep})
+				if {_repDur} is less than 0:
+					set {_repDur} to 0
+				set {_repRew} to damage of tool of player
+				set {_repRew} to {_repRew} - {_repDur}
+				set {_repRew} to {_repRew} * {_repMul}
+				set damage of tool of player to {_repDur}
+				add {_repRew} to {skmmo::%uuid of player%::repair::xp}
+				remove 1 of {_repMat} from the player
+#-------------------------------------------------------#
+#			ARCANCE FORGING			#
+#-------------------------------------------------------#
+
+	# Yes. Arcane Forging is currently the largest part of skMMO. if you can find a way to make Arcane Forging smaller
+	# It'd be greatly appreciated. (I'm holding a small reward for someone who can do it.)
+
+				{@repair.skill.arcaneforging} is true
+				if the player's tool is enchanted:
+					if {skmmo::%uuid of player%::repair::skills::arcaneforging::level} is 0:
+						disenchant the player's tool
+						send "&cYour %{_repTool}% became dull during repair."
+					else:
+						if the player's tool is enchanted with sharpness:
+							if the player's tool is enchanted with sharpness 5:
+								set {_kmmo::%uuid of player%::repair::enchant::sharpness::level} to 5
+							if the player's tool is enchanted with sharpness 4:
+								set {skmmo::%uuid of player%::repair::enchant::sharpness::level} to 4
+							if the player's tool is enchanted with sharpness 3:
+								set {skmmo::%uuid of player%::repair::enchant::sharpness::level} to 3
+							if the player's tool is enchanted with sharpness 2:
+								set {skmmo::%uuid of player%::repair::enchant::sharpness::level} to 2
+							if the player's tool is enchanted with sharpness 1:
+								set {skmmo::%uuid of player%::repair::enchant::sharpness::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+								if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+
+						if the player's tool is enchanted with smite:
+							if the player's tool is enchanted with smite 5:
+								set {skmmo::%uuid of player%::repair::enchant::smite::level} to 5
+							if the player's tool is enchanted with smite 4:
+								set {skmmo::%uuid of player%::repair::enchant::smite::level} to 4
+							if the player's tool is enchanted with smite 3:
+								set {skmmo::%uuid of player%::repair::enchant::smite::level} to 3
+							if the player's tool is enchanted with smite 2:
+								set {skmmo::%uuid of player%::repair::enchant::smite::level} to 2
+							if the player's tool is enchanted with smite 1:
+								set {skmmo::%uuid of player%::repair::enchant::smite::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::smite::level}
+								if {skmmo::%uuid of player%::repair::enchant::smite::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::smite::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+
+						if the player's tool is enchanted with power:
+							if the player's tool is enchanted with power 5:
+								set {skmmo::%uuid of player%::repair::enchant::power::level} to 5
+							if the player's tool is enchanted with power 4:
+								set {skmmo::%uuid of player%::repair::enchant::power::level} to 4
+							if the player's tool is enchanted with power 3:
+								set {skmmo::%uuid of player%::repair::enchant::power::level} to 3
+							if the player's tool is enchanted with power 2:
+								set {skmmo::%uuid of player%::repair::enchant::power::level} to 2
+							if the player's tool is enchanted with power 1:
+								set {skmmo::%uuid of player%::repair::enchant::power::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::power::level}
+								if {skmmo::%uuid of player%::repair::enchant::power::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::power::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::power::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::power::level}
+
+						if the player's tool is enchanted with efficiency:
+							if the player's tool is enchanted with efficiency 5:
+								set {skmmo::%uuid of player%::repair::enchant::efficiency::level} to 5
+							if the player's tool is enchanted with efficiency 4:
+								set {skmmo::%uuid of player%::repair::enchant::efficiency::level} to 4
+							if the player's tool is enchanted with efficiency 3:
+								set {skmmo::%uuid of player%::repair::enchant::efficiency::level} to 3
+							if the player's tool is enchanted with efficiency 2:
+								set {skmmo::%uuid of player%::repair::enchant::efficiency::level} to 2
+							if the player's tool is enchanted with efficiency 1:
+								set {skmmo::%uuid of player%::repair::enchant::efficiency::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+								if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+
+						if the player's tool is enchanted with bane of arthropods:
+							if the player's tool is enchanted with bane of arthropods 5:
+								set {skmmo::%uuid of player%::repair::enchant::arthopods::level} to 5
+							if the player's tool is enchanted with bane of arthropods 4:
+								set {skmmo::%uuid of player%::repair::enchant::arthopods::level} to 4
+							if the player's tool is enchanted with bane of arthropods 3:
+								set {skmmo::%uuid of player%::repair::enchant::arthopods::level} to 3
+							if the player's tool is enchanted with bane of arthropods 2:
+								set {skmmo::%uuid of player%::repair::enchant::arthopods::level} to 2
+							if the player's tool is enchanted with bane of arthropods 1:
+								set {skmmo::%uuid of player%::repair::enchant::arthopods::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+								if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+
+						if the player's tool is enchanted with protection:
+							if the player's tool is enchanted with protection 4:
+								set {skmmo::%uuid of player%::repair::enchant::protection::level} to 4
+							if the player's tool is enchanted with protection 3:
+								set {skmmo::%uuid of player%::repair::enchant::protection::level} to 3
+							if the player's tool is enchanted with protection 2:
+								set {skmmo::%uuid of player%::repair::enchant::protection::level} to 2
+							if the player's tool is enchanted with protection 1:
+								set {skmmo::%uuid of player%::repair::enchant::protection::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::protection::level}
+								if {skmmo::%uuid of player%::repair::enchant::protection::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::protection::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+
+						if the player's tool is enchanted with projectile protection:
+							if the player's tool is enchanted with projectile protection 4:
+								set {skmmo::%uuid of player%::repair::enchant::projprotection::level} to 4
+							if the player's tool is enchanted with projectile protection 3:
+								set {skmmo::%uuid of player%::repair::enchant::projprotection::level} to 3
+							if the player's tool is enchanted with projectile protection 2:
+								set {skmmo::%uuid of player%::repair::enchant::projprotection::level} to 2
+							if the player's tool is enchanted with projectile protection 1:
+								set {skmmo::%uuid of player%::repair::enchant::projprotection::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+								if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+
+						if the player's tool is enchanted with feather falling:
+							if the player's tool is enchanted with feather falling 4:
+								set {skmmo::%uuid of player%::repair::enchant::feather::level} to 4
+							if the player's tool is enchanted with feather falling 3:
+								set {skmmo::%uuid of player%::repair::enchant::feather::level} to 3
+							if the player's tool is enchanted with feather falling 2:
+								set {skmmo::%uuid of player%::repair::enchant::feather::level} to 2
+							if the player's tool is enchanted with feather falling 1:
+								set {skmmo::%uuid of player%::repair::enchant::feather::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::feather::level}
+								if {skmmo::%uuid of player%::repair::enchant::feather::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::feather::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+
+						if the player's tool is enchanted with blast protection:
+							if the player's tool is enchanted with blast protection 4:
+								set {skmmo::%uuid of player%::repair::enchant::blastprotection::level} to 4
+							if the player's tool is enchanted with blast protection 3:
+								set {skmmo::%uuid of player%::repair::enchant::blastprotection::level} to 3
+							if the player's tool is enchanted with blast protection 2:
+								set {skmmo::%uuid of player%::repair::enchant::blastprotection::level} to 2
+							if the player's tool is enchanted with blast protection 1:
+								set {skmmo::%uuid of player%::repair::enchant::blastprotection::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+								if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+
+						if the player's tool is enchanted with fire protection:
+							if the player's tool is enchanted with fire protection 4:
+								set {skmmo::%uuid of player%::repair::enchant::fireprotection::level} to 4
+							if the player's tool is enchanted with fire protection 3:
+								set {skmmo::%uuid of player%::repair::enchant::fireprotection::level} to 3
+							if the player's tool is enchanted with fire protection 2:
+								set {skmmo::%uuid of player%::repair::enchant::fireprotection::level} to 2
+							if the player's tool is enchanted with fire protection 1:
+								set {skmmo::%uuid of player%::repair::enchant::fireprotection::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+								if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+
+						if the player's tool is enchanted with respiration:
+							if the player's tool is enchanted with respiration 3:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 3
+							if the player's tool is enchanted with respiration 2:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 2
+							if the player's tool is enchanted with respiration 1:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::respiration::level}
+								if {skmmo::%uuid of player%::repair::enchant::respiration::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::respiration::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::respiration::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::respiration::level}
+
+
+						if the player's tool is enchanted with fortune:
+							if the player's tool is enchanted with fortune 3:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 3
+							if the player's tool is enchanted with fortune 2:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 2
+							if the player's tool is enchanted with fortune 1:
+								set {skmmo::%uuid of player%::repair::enchant::respiration::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::fortune::level}
+								if {skmmo::%uuid of player%::repair::enchant::fortune::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::fortune::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::fortune::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::fortune::level}
+
+						if the player's tool is enchanted with looting:
+							if the player's tool is enchanted with looting 3:
+								set {skmmo::%uuid of player%::repair::enchant::looting::level} to 3
+							if the player's tool is enchanted with looting 2:
+								set {skmmo::%uuid of player%::repair::enchant::looting::level} to 2
+							if the player's tool is enchanted with looting 1:
+								set {skmmo::%uuid of player%::repair::enchant::looting::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::looting::level}
+								if {skmmo::%uuid of player%::repair::enchant::looting::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::looting::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::looting::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::looting::level}
+
+						if the player's tool is enchanted with thorns:
+							if the player's tool is enchanted with thorns 3:
+								set {skmmo::%uuid of player%::repair::enchant::thorns::level} to 3
+							if the player's tool is enchanted with thorns 2:
+								set {skmmo::%uuid of player%::repair::enchant::thorns::level} to 2
+							if the player's tool is enchanted with thorns 1:
+								set {skmmo::%uuid of player%::repair::enchant::thorns::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::thorns::level}
+								if {skmmo::%uuid of player%::repair::enchant::thorns::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::thorns::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::thorns::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::thorns::level}
+
+						if the player's tool is enchanted with unbreaking:
+							if the player's tool is enchanted with unbreaking 3:
+								set {skmmo::%uuid of player%::repair::enchant::unbreaking::level} to 3
+							if the player's tool is enchanted with unbreaking 2:
+								set {skmmo::%uuid of player%::repair::enchant::unbreaking::level} to 2
+							if the player's tool is enchanted with unbreaking 1:
+								set {skmmo::%uuid of player%::repair::enchant::unbreaking::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+								if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+
+						if the player's tool is enchanted with punch:
+							if the player's tool is enchanted with punch 2:
+								set {skmmo::%uuid of player%::repair::enchant::punch::level} to 2
+							if the player's tool is enchanted with punch 1:
+								set {skmmo::%uuid of player%::repair::enchant::punch::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::punch::level}
+								if {skmmo::%uuid of player%::repair::enchant::punch::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::punch::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::punch::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::punch::level}
+
+						if the player's tool is enchanted with knockback:
+							if the player's tool is enchanted with knockback 2:
+								set {skmmo::%uuid of player%::repair::enchant::knockback::level} to 2
+							if the player's tool is enchanted with knockback 1:
+								set {skmmo::%uuid of player%::repair::enchant::knockback::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::knockback::level}
+								if {skmmo::%uuid of player%::repair::enchant::knockback::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::knockback::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::knockback::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::knockback::level}
+
+						if the player's tool is enchanted with fire aspect:
+							if the player's tool is enchanted with fire aspect 2:
+								set {skmmo::%uuid of player%::repair::enchant::fireaspect::level} to 2
+							if the player's tool is enchanted with fire aspect 1:
+								set {skmmo::%uuid of player%::repair::enchant::fireaspect::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::fireaspect::level}
+								if {skmmo::%uuid of player%::repair::enchant::fireaspect::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::fireaspect::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::fireaspect::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::fireaspect::level}
+
+						if the player's tool is enchanted with infinity:
+							if the player's tool is enchanted with infinity 1:
+								set {skmmo::%uuid of player%::repair::enchant::infinity::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::infinity::level}
+								if {skmmo::%uuid of player%::repair::enchant::infinity::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::infinity::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::infinity::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::infinity::level}
+
+						if the player's tool is enchanted with flame:
+							if the player's tool is enchanted with flame 1:
+								set {skmmo::%uuid of player%::repair::enchant::flame::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::flame::level}
+								if {skmmo::%uuid of player%::repair::enchant::flame::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::flame::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::flame::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::flame::level}
+
+						if the player's tool is enchanted with aqua affinity:
+							if the player's tool is enchanted with aqua affinity 1:
+								set {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level}
+								if {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level}
+
+						if the player's tool is enchanted with silk touch:
+							if the player's tool is enchanted with silk touch 1:
+								set {skmmo::%uuid of player%::repair::enchant::silk::level} to 1
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade}%:
+								remove 1 from {skmmo::%uuid of player%::repair::enchant::silk::level}
+								if {skmmo::%uuid of player%::repair::enchant::silk::level} is 0:
+									delete {skmmo::%uuid of player%::repair::enchant::silk::level}
+							chance of {skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance}%:
+								if {skmmo::%uuid of player%::repair::enchant::silk::level} is set:
+									delete {skmmo::%uuid of player%::repair::enchant::silk::level}
+
+
+						disenchant the player's tool
+						
+						if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 5:
+								enchant the player's tool with sharpness 5
+								delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+							if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 4:
+								enchant the player's tool with sharpness 4
+								delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+							if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 3:
+								enchant the player's tool with sharpness 3
+								delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+							if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 2:
+								enchant the player's tool with sharpness 2
+								delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+							if {skmmo::%uuid of player%::repair::enchant::sharpness::level} is 1:
+								enchant the player's tool with sharpness 1
+								delete {skmmo::%uuid of player%::repair::enchant::sharpness::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::smite::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::smite::level} is 5:
+								enchant the player's tool with smite 5
+								delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+							if {skmmo::%uuid of player%::repair::enchant::smite::level} is 4:
+								enchant the player's tool with smite 4
+								delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+							if {skmmo::%uuid of player%::repair::enchant::smite::level} is 3:
+								enchant the player's tool with smite 3
+								delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+							if {skmmo::%uuid of player%::repair::enchant::smite::level} is 2:
+								enchant the player's tool with smite 2
+								delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+							if {skmmo::%uuid of player%::repair::enchant::smite::level} is 1:
+								enchant the player's tool with smite 1
+								delete {skmmo::%uuid of player%::repair::enchant::smite::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::power::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::power::level} is 5:
+								enchant the player's tool with power 5
+								delete {skmmo::%uuid of player%::repair::enchant::power::level}
+							if {skmmo::%uuid of player%::repair::enchant::power::level} is 4:
+								enchant the player's tool with power 4
+								delete {skmmo::%uuid of player%::repair::enchant::power::level}
+							if {skmmo::%uuid of player%::repair::enchant::power::level} is 3:
+								enchant the player's tool with power 3
+								delete {skmmo::%uuid of player%::repair::enchant::power::level}
+							if {skmmo::%uuid of player%::repair::enchant::power::level} is 2:
+								enchant the player's tool with power 2
+								delete {skmmo::%uuid of player%::repair::enchant::power::level}
+							if {skmmo::%uuid of player%::repair::enchant::power::level} is 1:
+								enchant the player's tool with power 1
+								delete {skmmo::%uuid of player%::repair::enchant::power::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 5:
+								enchant the player's tool with efficiency 5
+								delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+							if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 4:
+								enchant the player's tool with efficiency 4
+								delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+							if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 3:
+								enchant the player's tool with efficiency 3
+								delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+							if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 2:
+								enchant the player's tool with efficiency 2
+								delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+							if {skmmo::%uuid of player%::repair::enchant::efficiency::level} is 1:
+								enchant the player's tool with efficiency 1
+								delete {skmmo::%uuid of player%::repair::enchant::efficiency::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 5:
+								enchant the player's tool with bane of arthropods 5
+								delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+							if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 4:
+								enchant the player's tool with bane of arthropods 4
+								delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+							if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 3:
+								enchant the player's tool with bane of arthropods 3
+								delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+							if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 2:
+								enchant the player's tool with bane of arthropods 2
+								delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+							if {skmmo::%uuid of player%::repair::enchant::arthopods::level} is 1:
+								enchant the player's tool with bane of arthropods 1
+								delete {skmmo::%uuid of player%::repair::enchant::arthopods::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::protection::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::protection::level} is 4:
+								enchant the player's tool with protection 4
+								delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+							if {skmmo::%uuid of player%::repair::enchant::protection::level} is 3:
+								enchant the player's tool with protection 3
+								delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+							if {skmmo::%uuid of player%::repair::enchant::protection::level} is 2:
+								enchant the player's tool with protection 2
+								delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+							if {skmmo::%uuid of player%::repair::enchant::protection::level} is 1:
+								enchant the player's tool with protection 1
+								delete {skmmo::%uuid of player%::repair::enchant::protection::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is 4:
+								enchant the player's tool with projectile protection 4
+								delete {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is 3:
+								enchant the player's tool with projectile protection 3
+								delete {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is 2:
+								enchant the player's tool with projectile protection 2
+								delete {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::projprotection::level} is 1:
+								enchant the player's tool with projectile protection 1
+								delete {skmmo::%uuid of player%::repair::enchant::projprotection::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::feather::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::feather::level} is 4:
+								enchant the player's tool with feather falling 4
+								delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+							if {skmmo::%uuid of player%::repair::enchant::feather::level} is 3:
+								enchant the player's tool with feather falling 3
+								delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+							if {skmmo::%uuid of player%::repair::enchant::feather::level} is 2:
+								enchant the player's tool with feather falling 2
+								delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+							if {skmmo::%uuid of player%::repair::enchant::feather::level} is 1:
+								enchant the player's tool with feather falling 1
+								delete {skmmo::%uuid of player%::repair::enchant::feather::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is 4:
+								enchant the player's tool with blast protection 4
+								delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is 3:
+								enchant the player's tool with blast protection 3
+								delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is 2:
+								enchant the player's tool with blast protection 2
+								delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::blastprotection::level} is 1:
+								enchant the player's tool with blast protection 1
+								delete {skmmo::%uuid of player%::repair::enchant::blastprotection::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is 4:
+								enchant the player's tool with fire protection 4
+								delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is 3:
+								enchant the player's tool with fire protection 3
+								delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is 2:
+								enchant the player's tool with fire protection 2
+								delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+							if {skmmo::%uuid of player%::repair::enchant::fireprotection::level} is 1:
+								enchant the player's tool with fire protection 1
+								delete {skmmo::%uuid of player%::repair::enchant::fireprotection::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::respiration::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::respiration::level} is 3:
+								enchant the player's tool with respiration 3
+								delete {skmmo::%uuid of player%::repair::enchant::respiration::level}
+							if {skmmo::%uuid of player%::repair::enchant::respiration::level} is 2:
+								enchant the player's tool with respiration 2
+								delete {skmmo::%uuid of player%::repair::enchant::respiration::level}
+							if {skmmo::%uuid of player%::repair::enchant::respiration::level} is 1:
+								enchant the player's tool with respiration 1
+								delete {skmmo::%uuid of player%::repair::enchant::respiration::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::fortune::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::fortune::level} is 3:
+								enchant the player's tool with fortune 3
+								delete {skmmo::%uuid of player%::repair::enchant::fortune::level}
+							if {skmmo::%uuid of player%::repair::enchant::fortune::level} is 2:
+								enchant the player's tool with fortune 2
+								delete {skmmo::%uuid of player%::repair::enchant::fortune::level}
+							if {skmmo::%uuid of player%::repair::enchant::fortune::level} is 1:
+								enchant the player's tool with fortune 1
+								delete {skmmo::%uuid of player%::repair::enchant::fortune::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::looting::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::looting::level} is 3:
+								enchant the player's tool with looting 3
+								delete {skmmo::%uuid of player%::repair::enchant::looting::level}
+							if {skmmo::%uuid of player%::repair::enchant::looting::level} is 2:
+								enchant the player's tool with looting 2
+								delete {skmmo::%uuid of player%::repair::enchant::looting::level}
+							if {skmmo::%uuid of player%::repair::enchant::looting::level} is 1:
+								enchant the player's tool with looting 1
+								delete {skmmo::%uuid of player%::repair::enchant::looting::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::thorns::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::thorns::level} is 3:
+								enchant the player's tool with thorns 3
+								delete {skmmo::%uuid of player%::repair::enchant::thorns::level}
+							if {skmmo::%uuid of player%::repair::enchant::thorns::level} is 2:
+								enchant the player's tool with thorns 2
+								delete {skmmo::%uuid of player%::repair::enchant::thorns::level}
+							if {skmmo::%uuid of player%::repair::enchant::thorns::level} is 1:
+								enchant the player's tool with thorns 1
+								delete {skmmo::%uuid of player%::repair::enchant::thorns::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is 3:
+								enchant the player's tool with unbreaking 3
+								delete {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+							if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is 2:
+								enchant the player's tool with unbreaking 2
+								delete {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+							if {skmmo::%uuid of player%::repair::enchant::unbreaking::level} is 1:
+								enchant the player's tool with unbreaking 1
+								delete {skmmo::%uuid of player%::repair::enchant::unbreaking::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::punch::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::punch::level} is 2:
+								enchant the player's tool with punch 2
+								delete {skmmo::%uuid of player%::repair::enchant::punch::level}
+							if {skmmo::%uuid of player%::repair::enchant::punch::level} is 1:
+								enchant the player's tool with punch 1
+								delete {skmmo::%uuid of player%::repair::enchant::punch::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::knockback::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::knockback::level} is 2:
+								enchant the player's tool with knockback 2
+								delete {skmmo::%uuid of player%::repair::enchant::knockback::level}
+							if {skmmo::%uuid of player%::repair::enchant::knockback::level} is 1:
+								enchant the player's tool with knockback 1
+								delete {skmmo::%uuid of player%::repair::enchant::knockback::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::fireaspect::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::fireaspect::level} is 2:
+								enchant the player's tool with fire aspect 2
+								delete {skmmo::%uuid of player%::repair::enchant::fireaspect::level}
+							if {skmmo::%uuid of player%::repair::enchant::fireaspect::level} is 1:
+								enchant the player's tool with fire aspect 1
+								delete {skmmo::%uuid of player%::repair::enchant::fireaspect::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::infinity::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::infinity::level} is 1:
+								enchant the player's tool with infinity 1
+								delete {skmmo::%uuid of player%::repair::enchant::infinity::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::flame::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::flame::level} is 1:
+								enchant the player's tool with flame 1
+								delete {skmmo::%uuid of player%::repair::enchant::flame::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level} is 1:
+								enchant the player's tool with aqua affinity 1
+								delete {skmmo::%uuid of player%::repair::enchant::aquaaffinity::level}
+
+						if {skmmo::%uuid of player%::repair::enchant::silk::level} is set:
+							if {skmmo::%uuid of player%::repair::enchant::silk::level} is 1:
+								enchant the player's tool with silk touch 1
+								delete {skmmo::%uuid of player%::repair::enchant::silk::level}
+
+						send "&cYour %{_repTool}% has dulled during repair."
+						make console execute command "skmmo check %player% Repair"
+				else:
+					send "You've Repaired your %{_repTool}%!"
+					make console execute command "skmmo check %player% Repair"
+			else:
+				send "&cYou need more %{_repMat}%(s)!"
+				
+#	{skmmo::%uuid of player%::repair::xp} = 0
+#	{skmmo::%uuid of player%::repair::level::level} = 0
+#	{skmmo::%uuid of player%::repair::level::amount} = 250
+#	{skmmo::%uuid of player%::repair::skills::arcaneforging::level} = 0
+#	{skmmo::%uuid of player%::repair::skills::arcaneforging::level::chance} = 100
+#	{skmmo::%uuid of player%::repair::skills::arcaneforging::level::downgrade} = 0
+#	{skmmo::%uuid of player%::repair::skills::repair::diamond} = false
+#	{skmmo::%uuid of player%::repair::skills::mastery} = 1
