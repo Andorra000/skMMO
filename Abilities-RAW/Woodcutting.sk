@@ -1,0 +1,159 @@
+options:
+						# WOODCUTTING
+		#The Woodcutting ability allows players to chop down trees for a chance
+		#of double drops. Woodcutting is a part of the core 4 (Mining, Woodcutting, 
+		#Excavation, Acrobatics) and is heavily recommended on Towny, Faction, and
+		#Prison servers. Also may apply for anything with large amounts of chopping
+		#down trees. Woodcutting comes with 2 Skills. (Tree Feller & Leaf Blower)
+		#Tree Feller allows the player to chop down a tree just by cutting at the base
+		#It is a skill with a cooldown and damages the player's axe higher than normal.
+		#Leaf Blower allows the player to clear out leaves when cutting down wood. Note:
+		#This ability is passive and unlocks for the player at a default level 100.
+		#Disabling this ability will disable Tree Feller, Leaf Blower and the chance of
+		#Double drops on breaking wood. Also Disables the Woodcutting Levelling system.
+
+	ability.woodcutting: true
+	
+	cooldown.treefeller: 2 minutes
+	woodcutting.oak.reward: 25
+	woodcutting.birch.reward: 30
+	woodcutting.darkoak.reward: 30
+	woodcutting.jungle.reward: 40
+	woodcutting.acacia.reward: 30
+	woodcutting.spruce.reward: 30
+	woodcutting.levelup.amount: 200
+	
+command /woodcutting:
+	trigger:
+		if {@ability.woodcutting} is true:	
+			send "&c-----[]&aWoodcutting&c[]-----"
+			send "&8XP GAIN: &fCutting down trees"
+			send "&8LVL: &a%{skmmo::%uuid of player%::woodcutting::level::level}% &3XP&e(&6%{skmmo::%uuid of player%::woodcutting::xp}%&e/&6%{skmmo::%uuid of player%::woodcutting::level::amount}%&e)"
+			send "&c-----[]&aEffects&c[]-----"
+			send "&3Tree Feller (ABILITY): &aMake trees explode"
+			send "&3Leaf Blower: &aBlow Away Leaves"
+			send "&3Double Drops: &aDouble the Normal Loot"
+			send "&c-----[]&aYour Stats&c[]-----"
+			send "%{skmmo::%uuid of player%::woodcutting::skills::leafblower::msg}%"
+			send "&cDouble Drop Chance: &e%{skmmo::%uuid of player%::woodcutting::skills::double}%"
+			send "&cTree Feller Length: &e%{skmmo::%uuid of player%::woodcutting::skills::treefeller::durability}%"
+		else:
+			send "&7[&6skMMO&7] &cThis Ability &o(Woodcutting) &cis disabled." 
+
+#-------------------------------------------------------#
+#			WOODCUTTING			#
+#-------------------------------------------------------#
+on mine:
+	if {@ability.woodcutting} is true:
+		if {skmmo::blocklog::%location of event-block%} isn't set:
+			player is holding an axe:
+				event-block is oak log:
+					add {@woodcutting.oak.reward} to {skmmo::%uuid of player%::woodcutting::xp}
+					chance of {skmmo::%uuid of player%::woodcutting::skills::double}%:
+						drop 1 of oak log at event-block
+				event-block is spruce log:
+					add {@woodcutting.spruce.reward} to {skmmo::%uuid of player%::woodcutting::xp}
+					chance of {skmmo::%uuid of player%::woodcutting::skills::double}%:
+						drop 1 of spruce log at event-block
+				event-block is birch log:
+					add {@woodcutting.birch.reward} to {skmmo::%uuid of player%::woodcutting::xp}
+					chance of {skmmo::%uuid of player%::woodcutting::skills::double}%:
+						drop 1 of birch log at event-block
+				event-block is jungle log:
+					add {@woodcutting.jungle.reward} to {skmmo::%uuid of player%::woodcutting::xp}
+					chance of {skmmo::%uuid of player%::woodcutting::skills::double}%:
+						drop 1 of jungle log at event-block
+				event-block is dark oak log:
+					add {@woodcutting.darkoak.reward} to {skmmo::%uuid of player%::woodcutting::xp}
+					chance of {skmmo::%uuid of player%::woodcutting::skills::double}%:
+						drop 1 of dark oak log at event-block
+				make console execute command "skmmo check Woodcutting %player%"
+				
+
+#-------------------------------------------------------#
+#			LEAF BLOWER			#
+#-------------------------------------------------------#
+on break of log:
+	if player is holding an axe:
+		if {skmmo::%uuid of player%::woodcutting::skills::leafblower} is true:
+			loop blocks in radius 2 around event-block:
+				if loop-block is leaves:
+					wait 1 tick
+					set loop-block to air
+#-------------------------------------------------------#
+#			TREE FELLER			#
+#-------------------------------------------------------#
+
+# Special thanks to guruflex for helping me with Tree Feller.
+# I was scared of this one XD
+
+on right click:
+	if {@ability.woodcutting} is true:
+		player is holding a axe:
+			if clicked block is iron block or gold block :
+				stop
+			else:
+				if {skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} is false:
+					set {_difference} to difference between {skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldowner} and now
+					if {_difference} is less than {@cooldown.treefeller}:
+						set {_difference} to difference between {@cooldown.treefeller} and {_difference}
+						send "&cYou are too tired to use this ability. &e(%{_difference}%)"
+						if {skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldownmsg} is false:
+							set {skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldownmsg} to true
+							wait {_difference}
+							send "&aYour &eTree Feller &ais Refreshed!"
+							set {skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldownmsg} to false
+					else:
+						send "&a** YOU RAISE YOUR AXE **"
+						set {skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} to true
+						wait 1 seconds
+						if {skmmo::%uuid of player%::woodcutting::skills::treefeller::use} is false:
+							send "&7** YOU LOWER YOUR AXE **"
+							set {skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} to false
+
+on left click:
+	if {@ability.woodcutting} is true:
+		player is holding a axe:
+			if {skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} is true:
+				set {skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} to false
+				set {skmmo::%uuid of player%::woodcutting::skills::treefeller::use} to true
+				send "&a&l*** Tree-Feller Activated ***"
+				wait {skmmo::%uuid of player%::woodcutting::skills::treefeller::durability}
+				send "&7&l*** Tree-Feller Deactivated ***"
+				set {skmmo::%uuid of player%::woodcutting::skills::treefeller::use} to false
+				set {skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldowner} to now
+on break of wood:
+	if {skmmo::%uuid of player%::woodcutting::skills::treefeller::use} is true:
+		player is holding axe
+		loop blocks upwards:
+			loop-block is wood
+			add 1 to {_tool}
+			loop blocks in radius 2 around loop-block:
+				if loop-block-2 is leaves:
+					set {_tree} to true
+					set the loop-block-2 to air
+		{_tree} is true
+		loop blocks upwards:
+			if loop-block is wood:
+				drop the loop-block-1 at event-block
+				set the loop-block-1 to air
+			loop blocks in radius 4 around loop-block:
+				if loop-block-2 is wood:
+					drop the loop-block-2 at event-block
+					set the loop-block-2 to air
+					set {_tree} to false
+					damage player's tool by {_tool}
+					wait 1 tick
+					set {_tool} to 0
+					
+#	{skmmo::%uuid of player%::woodcutting::xp} = 0
+#	{skmmo::%uuid of player%::woodcutting::level::level} = 0
+#	{skmmo::%uuid of player%::woodcutting::level::amount} = 1750
+#	{skmmo::%uuid of player%::woodcutting::skills::treefeller::durability} = 1 second
+#	{skmmo::%uuid of player%::woodcutting::skills::treefeller::use} = false
+#	{skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldowntime} = 360
+#	{skmmo::%uuid of player%::woodcutting::skills::treefeller::cooldown} = 0
+#	{skmmo::%uuid of player%::woodcutting::skills::treefeller::toggle} = false
+#	{skmmo::%uuid of player%::woodcutting::skills::leafblower::msg} = "&cLEAF BLOWER: LOCKED UNTIL LEVEL 100"
+#	{skmmo::%uuid of player%::woodcutting::skills::leafblower} = false
+#	{skmmo::%uuid of player%::woodcutting::skills::double} = 0
