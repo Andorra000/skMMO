@@ -1,0 +1,208 @@
+options:
+						# MINING
+		#The Mining Ability allows players to Mine for a chance of double drops.
+		#Mining, Part of the core 4 (Mining, Woodcutting, Excavation, Acrobatics)
+		#Is heavily recommended on Towny, Faction, and Prison Servers. Also may
+		#Apply for anything with large amounts of mining necessary. This Ability
+		#Comes with one Skill Currently. (Super Breaker) Super Breaker allows the
+		#Player to break blocks much faster than normal (One hit, May be changed
+		#in the future.) Disabiling this Ability will remove Super Breaker and
+		#Double drops on breaking ores. Also disables the Mining Leveling System.
+		
+	ability.mining: true
+	
+	cooldown.superbreaker: 2 minutes
+	mining.stone.reward: 10
+	mining.mossycobblestone.reward: 40
+	mining.netherrack.reward: 10
+	mining.sandstone.reward: 10
+	mining.glowstone.reward: 30
+	mining.redstone.reward: 50
+	mining.endstone.reward: 50
+	mining.obsidian.reward: 50
+	mining.iron.reward: 80
+	mining.quartz.reward: 80
+	mining.gold.reward: 120
+	mining.lapis.reward: 130
+	mining.diamond.reward: 250
+	mining.emerald.reward: 330
+	mining.levelup.amount: 250
+	
+#-------------------------------------------------------#
+#			MINING				#
+#-------------------------------------------------------#
+
+on mine:
+	if {@ability.mining} is true:
+		if {skmmo::blocklog::%location of event-block%} isn't set:
+			event-block is stone:
+				if player is holding a pickaxe:
+					add {@mining.stone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of cobblestone at event-block
+			event-block is mossy cobblestone:
+				if player is holding a pickaxe:
+					add {@mining.mossycobblestone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of mossy cobblestone at event-block
+			event-block is netherrack:
+				if player is holding a pickaxe:
+					add {@mining.netherrack.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of netherrack at event-block
+			event-block is sandstone:
+				if player is holding a pickaxe:
+					add {@mining.sandstone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of sandstone at event-block
+			event-block is glowstone:
+				if player is holding a pickaxe:
+					add {@mining.glowstone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 4 of glowstone dust at event-block
+			event-block is redstone ore:
+				if player is holding a pickaxe:
+					add {@mining.redstone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 6 of redstone at event-block
+			event-block is end stone:
+				if player is holding a pickaxe:
+					add {@mining.endstone.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of end stone at event-block
+			event-block is obsidian:
+				if player is holding a pickaxe:
+					add {@mining.obsidian.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of obsidian at event-block
+			event-block is iron ore:
+				if player is holding a pickaxe:
+					add {@mining.iron.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of iron ore at event-block
+			event-block is nether quartz ore:
+				if player is holding a pickaxe:
+					add {@mining.quartz.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 4 of nether quartz at event-block
+			event-block is gold ore:
+				if player is holding a pickaxe:
+					add {@mining.gold.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of gold ore at event-block
+			event-block is lapis ore:
+				if player is holding a pickaxe:
+					add {@mining.lapis.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 4 of lapis at event-block
+			event-block is diamond ore:
+				if player is holding a pickaxe:
+					add {@mining.diamond.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of diamond at event-block
+			event-block is emerald ore:
+				if player is holding a pickaxe:
+					add {@mining.emerald.reward} to {skmmo::%uuid of player%::mining::xp}
+					chance of {skmmo::%uuid of player%::mining::skills::double}%:
+						drop 1 of emerald at event-block
+			make console execute command "skmmo check %player% Mining"
+
+#-------------------------------------------------------#
+#			SUPERBREAKER			#
+#-------------------------------------------------------#
+on right click:
+	if {@ability.mining} is true:
+		player is holding a pickaxe:
+			if clicked block is iron block or gold block:
+				stop
+			else:
+				if {skmmo::%uuid of player%::mining::skills::superbreaker::toggle} is false:
+					set {_difference} to difference between {skmmo::%uuid of player%::mining::skills::superbreaker::cooldowner} and now
+					if {_difference} is less than {@cooldown.superbreaker}:
+						set {_difference} to difference between {@cooldown.superbreaker} and {_difference}
+						send "&cYou are too tired to use this ability. &e(%{_difference}%)"
+						if {skmmo::%uuid of player%::mining::skills::superbreaker::cooldownmsg} is false:
+							set {skmmo::%uuid of player%::mining::skills::superbreaker::cooldownmsg} to true
+							wait {_difference}
+							send "&aYour &eSuper Breaker &ais Refreshed!"
+							set {skmmo::%uuid of player%::mining::skills::superbreaker::cooldownmsg} to false
+					else:
+						send "&a** YOU RAISE YOUR PICKAXE **"
+						set {skmmo::%uuid of player%::mining::skills::superbreaker::toggle} to true
+						wait 1 seconds
+						if {skmmo::%uuid of player%::mining::skills::superbreaker::use} is false:
+							send "&7** YOU LOWER YOUR PICKAXE **"
+							set {skmmo::%uuid of player%::mining::skills::superbreaker::toggle} to false
+
+on left click:
+	if {@ability.mining} is true:
+		player is holding a pickaxe:
+			if {skmmo::%uuid of player%::mining::skills::superbreaker::toggle} is true:
+				set {skmmo::%uuid of player%::mining::skills::superbreaker::toggle} to false
+				set {skmmo::%uuid of player%::mining::skills::superbreaker::use} to true
+				send "&a&l*** Super-Breaker Activated ***"
+				set {skmmo::%uuid of player%::mining::skills::superbreaker::cooldowner} to now
+				wait {skmmo::%uuid of player%::mining::skills::superbreaker::durability}
+				send "&7&l*** Super-Breaker Deactivated ***"
+				set {skmmo::%uuid of player%::mining::skills::superbreaker::use} to false
+
+on left click:
+	if {@ability.mining} is true:
+		player is holding a pickaxe:
+			if {skmmo::%uuid of player%::mining::skills::superbreaker::use} is true:
+				if clicked block is stone or redstone ore or gold ore or lapis ore or iron ore or diamond ore or emerald ore or glowstone or obsidian or end stone or nether quartz ore or netherrack or mossy cobblestone or sandstone:
+					if {skmmo::blocklog::%location of event-block%} isn't set:
+						if clicked block is stone:
+							drop 1 of cobblestone at clicked block
+							add {@mining.stone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is netherrack:
+							drop 1 of netherrack at clicked block
+							add {@mining.netherrack.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is sandstone:
+							drop 1 of sandstone at clicked block
+							add {@mining.sandstone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is mossy cobblestone:
+							drop 1 of mossy cobblestone at clicked block
+							add {@mining.mossycobblestone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is gold ore:
+							drop 1 of gold ore at clicked block
+							add {@mining.gold.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is glowstone:
+							drop 4 of glowstone dust at clicked block
+							add {@mining.glowstone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is lapis ore:
+							drop 4 of lapis at clicked block
+							add {@mining.lapis.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is redstone ore:
+							drop 5 of redstone dust at clicked block
+							add {@mining.redstone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is emerald ore:
+							drop 1 of emerald at clicked block
+							add {@mining.emerald.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is diamond ore:
+							drop 1 of diamond at clicked block
+							add {@mining.diamond.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is iron ore:
+							drop 1 of iron ore at clicked block
+							add {@mining.iron.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is obsidian:
+							if player is holding a diamond pickaxe:
+								drop 1 of obsidian at clicked block
+								add {@mining.obsidian.reward} to {skmmo::%uuid of player%::mining::xp}
+							else:
+								cancel event
+						if clicked block is end stone:
+							drop 1 of end stone at clicked block
+							add {@mining.endstone.reward} to {skmmo::%uuid of player%::mining::xp}
+						if clicked block is nether quartz ore:
+							drop 4 of nether quartz at clicked block
+							add {@mining.quartz.reward} to {skmmo::%uuid of player%::mining::xp}
+						set clicked block to air
+						make console execute command "skmmo check %player% Mining"
+#	{skmmo::%uuid of player%::mining::xp} = 0
+#	{skmmo::%uuid of player%::mining::level::level} = 0
+#	{skmmo::%uuid of player%::mining::level::amount} = 2500
+#	{skmmo::%uuid of player%::mining::skills::superbreaker::toggle} = false
+#	{skmmo::%uuid of player%::mining::skills::superbreaker::durability} = 1 Second
+#	{skmmo::%uuid of player%::mining::skills::superbreaker::use} = false
+#	{skmmo::%uuid of player%::mining::skills::double} = 0.01
