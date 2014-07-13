@@ -1,0 +1,359 @@
+options:
+						# EXCAVATION
+		#The Excavation Ability allows the player to dig for treasures and chance for
+		#Double drops. Excavation is a part of the Core 4 (Mining, Woodcutting, Acrobatics,
+		#Excavation) and is heavily recommended on Towny, Faction, Modded-Survival and 
+		#Prison Servers. Also may apply for anything with large amounts of excavating or
+		#Treasure finding ;) Excavation comes with 2 skills (Treasure Hunter & Giga Drill)
+		#Giga Drill allows player to dig extremly fast, has a cooldown. Treasure Hunter
+		#Allows the player to search for treasures while digging, making excavation a bit
+		#More fun. Different levels and xp rewards for finding treasure are all changeable.
+		#Disabling this ability will disable Giga Drill and Treasure hunter, as well as the
+		#Excavation Leveling System.
+	ability.excavation: true
+	
+	cooldown.gigadrill: 2 minutes
+	excavation.levelup.amount: 200
+	excavation.all.reward: 40
+	
+command /excavation:
+	trigger:
+		if {@ability.excavation} is true:
+			send "&c-----[]&aExcavation&c[]-----"
+			send "&8XP GAIN: &fDigging and finding treasures"
+			send "&8LVL: &a%{skmmo::%uuid of player%::excavation::level::level}% &3XP&e(&6%{skmmo::%uuid of player%::excavation::xp}%&e/&6%{skmmo::%uuid of player%::excavation::level::amount}%&e)"
+			send "&c-----[]&aEffects&c[]-----"
+			send "&3Giga Drill Breaker (ABILITY): &a3x Drop Rate, 3x XP, +Speed"
+			send "&3Treasure Hunter: &aAbility to dig for treasure"
+			send "&3Double Drops: &aDouble the normal Loot."
+			send "&c-----[]&aYour Stats&c[]-----"
+			send "&cGiga Drill Breaker Length: &e%{skmmo::%uuid of player%::excavation::skills::gigadrill::durability}%"
+			send "&cDouble Drop Chance: &e%{skmmo::%uuid of player%::excavation::skills::double}%"
+		else:
+			send "&7[&6skMMO&7] &cThis Ability &o(Excavation) &cis disabled."
+			
+#-------------------------------------------------------#
+#			EXCAVATION			#
+#-------------------------------------------------------#
+on mine:
+	if {@ability.excavation} is true:
+		if {skmmo::blocklog::%location of event-block%} isn't set:
+			player is holding a shovel:
+				event-block is grass or mycelium or dirt or gravel or sand or clay block or soul sand:
+					add {@excavation.all.reward} to {skmmo::%uuid of player%::excavation::xp}
+					chance of {skmmo::%uuid of player%::excavation::skills::double}%:
+						drop 1 of event-block at event-block
+					make console execute command "skmmo check %player% Excavation"	
+
+#-------------------------------------------------------#
+#			TREASURE HUNTER			#
+#-------------------------------------------------------#
+options:
+	level.goldmusicdisc: 250
+	excavation.goldmusicdisc.reward: 3000
+	level.greenmusicdisc: 250
+	excavation.greenmusicdisc.reward: 3000 
+	level.nametag: 250
+	excavation.nametag.reward: 3000
+	level.diamonds: 350
+	excavation.diamonds.reward: 1000
+	level.cake: 750
+	excavation.cake.reward: 3000
+	level.netherquartz: 850
+	excavation.netherquartz.reward: 3000
+	level.glowstone: 25
+	excavation.glowstone.reward: 80
+	level.map: 25
+	excavation.map.reward: 200
+	level.gunpowder: 75
+	excavation.gunpowder.reward: 30
+	level.slimeball: 150
+	excavation.slimeball.reward: 10
+	level.bone: 175
+	excavation.bone.reward: 30
+	level.eggs: 250
+	excavation.eggs.reward: 100
+	level.apple: 250
+	excavation.apple.reward: 100
+	level.string: 250
+	excavation.string.reward: 200
+	level.cocoabeans: 350
+	excavation.cocoabeans.reward: 90
+	level.mushrooms: 500
+	excavation.mushrooms.reward: 80
+	level.bucket: 500
+	excavation.bucket.reward: 100
+	level.clock: 500
+	excavation.clock.reward: 100
+	level.soulsand: 650
+	excavation.soulsand.reward: 80
+	level.cobweb: 500
+	excavation.cobweb.reward: 100
+	level.cake: 750
+	excavation.cake.reward: 3000
+	level.netherrack: 850
+	excavation.netherrack.reward: 3000
+	level.netherquartz: 850
+	excavation.netherquartz.reward: 3000
+
+on mine:
+	if {@ability.excavation} is true:
+		player is holding a shovel:
+			if event-block is grass or mycelium or dirt or gravel or clay block or sand or soul sand:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.diamonds}:
+					chance of 0.25%:
+						drop 1 of diamond at event-block
+						add {@excavation.diamonds.reward} to {skmmo::uuid of %uuid of player%::excavation::xp}				
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.goldmusicdisc}:
+					chance of 0.05%:
+						drop 1 of gold music disc at event-block
+						add {@excavation.goldmusicdisc.reward} to {skmmo::%uuid of player%::excavation::xp}				
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.greenmusicdisc}:
+					chance of 0.05%:
+						drop 1 of green music disc at event-block
+						add {@excavation.greenmusicdisc.reward} to {skmmo::%uuid of player%::excavation::xp}				
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.nametag}:
+					chance of 1%:
+						drop 1 of name tag at event-block
+						add {@excavation.nametag.reward} to {skmmo::%uuid of player%::excavation::xp}				
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cake}:
+					chance of 0.05%:
+						drop 1 of cake at event-block	
+						add {@excavation.cake.reward} to {skmmo::%uuid of player%::excavation::xp}			
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.netherquartz}:
+					chance of 0.05%:
+						drop 1 of nether quartz at event-block	
+						add {@excavation.netherquartz.reward} to {skmmo::%uuid of player%::excavation::xp}			
+			if event-block is grass or mycelium or dirt or sand:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.glowstone}:
+					chance of 5%:
+						drop 1 of glowstone at event-block
+						add {@excavation.glowstone.reward} to {skmmo::%uuid of player%::excavation::xp}				
+			if event-block is grass or mycelium:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.apple}:
+					chance of 0.1%:
+						drop 1 of apple at event-block
+						add {@excavation.apple.reward} to {skmmo::%uuid of player%::excavation::xp}					
+			if event-block is grass or mycelium or dirt:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cocoabeans}:
+					chance of 1.33%:
+						drop 1 of cocoa beans at event-block
+						add {@excavation.cocoabeans.reward} to {skmmo::%uuid of player%::excavation::xp}					
+			if event-block is sand or mycelium or dirt:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.mushrooms}:
+					chance of 0.5%:
+						drop 1 of red mushroom or brown mushroom at event-block	
+						add {@excavation.mushrooms.reward} to {skmmo::%uuid of player%::excavation::xp}				
+			if event-block is grass:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.eggs}:
+					chance of 1%:
+						drop 1 of egg at event-block	
+						add {@excavation.eggs.reward} to {skmmo::%uuid of player%::excavation::xp}			
+			if event-block is clay block:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.map}:
+					chance of 2%:
+						drop 1 of map at event-block
+						add {@excavation.map.reward} to {skmmo::%uuid of player%::excavation::xp}					
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.slimeball}:
+					chance of 1%:
+						drop 1 of slimeball at event-block
+						add {@excavation.slimeball.reward} to {skmmo::%uuid of player%::excavation::xp}						
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.string}:
+					chance of 5%:
+						drop 1 of string at event-block
+						add {@excavation.string.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.bucket}:
+					chance of 0.1%:
+						drop 1 of bucket at event-block
+						add {@excavation.bucket.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.clock}:
+					chance of 0.1%:
+						drop 1 of clock at event-block
+						add {@excavation.clock.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cobweb}:
+					chance of 5%:
+						drop 1 of cobweb at event-block
+						add {@excavation.cobweb.reward} to {skmmo::%uuid of player%::excavation::xp}
+			if event-block is gravel:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.gunpowder}:
+					chance of 10%:
+						drop 1 of gunpowder at event-block
+						add {@excavation.gunpowder.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.bone}:
+					chance of 10%:
+						drop 1 of bone at event-block
+						add {@excavation.bone.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.netherrack}:
+					chance of 0.5%:
+						drop 1 of netherrack at event-block
+						add {@excavation.netherrack.reward} to {skmmo::%uuid of player%::excavation::xp}
+			if event-block is sand:
+				if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.soulsand}:
+					chance of 0.5%:
+						drop 1 of soul sand at event-block	
+						add {@excavation.soulsand.reward} to {skmmo::%uuid of player%::excavation::xp}
+			make console execute command "skmmo check %player% Excavation"
+on left click:
+	if {@ability.excavation} is true:
+		if {skmmo::%uuid of player%::excavation::skills::gigadrill::use} is true:
+			player is holding a shovel:
+				if event-block is grass or mycelium or dirt or gravel or clay block or sand or soul sand:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.diamonds}:
+						chance of 0.5%:
+							drop 1 of diamond at event-block
+							add {@excavation.diamonds.reward} to {skmmo::%uuid of player%::excavation::xp}				
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.goldmusicdisc}:
+						chance of 0.1%:
+							drop 1 of gold music disc at event-block
+							add {@excavation.goldmusicdisc.reward} to {skmmo::%uuid of player%::excavation::xp}				
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.greenmusicdisc}:
+						chance of 0.1%:
+							drop 1 of green music disc at event-block
+							add {@excavation.greenmusicdisc.reward} to {skmmo::%uuid of player%::excavation::xp}				
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.nametag}:
+						chance of 2%:
+							drop 1 of name tag at event-block
+							add {@excavation.nametag.reward} to {skmmo::%uuid of player%::excavation::xp}				
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cake}:
+						chance of 0.1%:
+							drop 1 of cake at event-block	
+							add {@excavation.cake.reward} to {skmmo::%uuid of player%::excavation::xp}			
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.netherquartz}:
+						chance of 0.1%:
+							drop 1 of nether quartz at event-block	
+							add {@excavation.netherquartz.reward} to {skmmo::%uuid of player%::excavation::xp}			
+				if event-block is grass or mycelium or dirt or sand:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.glowstone}:
+						chance of 10%:
+							drop 1 of glowstone at event-block
+							add {@excavation.glowstone.reward} to {skmmo::%uuid of player%::excavation::xp}				
+				if event-block is grass or mycelium:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.apple}:
+						chance of 0.2%:
+							drop 1 of apple at event-block
+							add {@excavation.apple.reward} to {skmmo::%uuid of player%::excavation::xp}					
+				if event-block is grass or mycelium or dirt:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cocoabeans}:
+						chance of 2.66%:
+							drop 1 of cocoa beans at event-block
+							add {@excavation.cocoabeans.reward} to {skmmo::%uuid of player%::excavation::xp}					
+				if event-block is sand or mycelium or dirt:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.mushrooms}:
+						chance of 1%:
+							drop 1 of red mushroom or brown mushroom at event-block	
+							add {@excavation.mushrooms.reward} to {skmmo::%uuid of player%::excavation::xp}				
+				if event-block is grass:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.eggs}:
+						chance of 2%:
+							drop 1 of egg at event-block	
+							add {@excavation.eggs.reward} to {skmmo::%uuid of player%::excavation::xp}			
+				if event-block is clay block:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.map}:
+						chance of 4%:
+							drop 1 of map at event-block
+							add {@excavation.map.reward} to {skmmo::%uuid of player%::excavation::xp}					
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.slimeball}:
+						chance of 2%:
+							drop 1 of slimeball at event-block
+							add {@excavation.slimeball.reward} to {skmmo::%uuid of player%::excavation::xp}						
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.string}:
+						chance of 10%:
+							drop 1 of string at event-block
+							add {@excavation.string.reward} to {skmmo::%uuid of player%::excavation::xp}
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.bucket}:
+						chance of 0.2%:
+							drop 1 of bucket at event-block
+							add {@excavation.bucket.reward} to {skmmo::%uuid of player%::excavation::xp}
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.clock}:
+						chance of 0.2%:
+							drop 1 of clock at event-block
+							add {@excavation.clock.reward} to {skmmo::%uuid of player%::excavation::xp}
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.cobweb}:
+						chance of 10%:
+							drop 1 of cobweb at event-block
+							add {@excavation.cobweb.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if event-block is gravel:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.gunpowder}:
+						chance of 20%:
+							drop 1 of gunpowder at event-block
+							add {@excavation.gunpowder.reward} to {skmmo::%uuid of player%::excavation::xp}
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.bone}:
+						chance of 20%:
+							drop 1 of bone at event-block
+							add {@excavation.bone.reward} to {skmmo::%uuid of player%::excavation::xp}
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.netherrack}:
+						chance of 1%:
+							drop 1 of netherrack at event-block
+							add {@excavation.netherrack.reward} to {skmmo::%uuid of player%::excavation::xp}
+				if event-block is sand:
+					if {skmmo::%uuid of player%::excavation::level::level} is more than or equal to {@level.soulsand}:
+						chance of 1%:
+							drop 1 of soul sand at event-block	
+							add {@excavation.soulsand.reward} to {skmmo::%uuid of player%::excavation::xp}
+				make console execute command "skmmo check %player% Excavation"
+#-------------------------------------------------------#
+#			GIGA DRILL			#
+#-------------------------------------------------------#
+on right click:
+	if {@ability.excavation} is true:
+		player is holding a shovel:
+			if clicked block is iron block or gold block:
+				stop
+			else:
+				if {skmmo::%uuid of player%::excavation::skills::gigadrill::toggle} is false:
+					set {_difference} to difference between {skmmo::%uuid of player%::excavation::skills::gigadrill::cooldowner} and now
+					if {_difference} is less than {@cooldown.gigadrill}:
+						set {_difference} to difference between {@cooldown.gigadrill} and {_difference}
+						send "&cYou are too tired to use this ability. &e(%{_difference}%)"
+						if {skmmo::%uuid of player%::excavation::skills::gigadrill::cooldownmsg} is false:
+							set {skmmo::%uuid of player%::excavation::skills::gigadrill::cooldownmsg} to true
+							wait {_difference}
+							send "&aYour &eGiga Drill &ais Refreshed!"
+							set {skmmo::%uuid of player%::excavation::skills::gigadrill::cooldownmsg} to false
+					else:
+						send "&a** YOU RAISE YOUR SHOVEL **"
+						set {skmmo::%uuid of player%::excavation::skills::gigadrill::toggle} to true
+						wait 1 seconds
+						if {skmmo::%uuid of player%::excavation::skills::gigadrill::use} is false:
+							send "&7** YOU LOWER YOUR SHOVEL **"
+							set {skmmo::%uuid of player%::excavation::skills::gigadrill::toggle} to false
+on left click:
+	if {@ability.mining} is true:
+		player is holding a shovel:
+			if {skmmo::%uuid of player%::excavation::skills::gigadrill::toggle} is true:
+				set {skmmo::%uuid of player%::excavation::skills::gigadrill::toggle} to false
+				set {skmmo::%uuid of player%::excavation::skills::gigadrill::use} to true
+				send "&a&l*** Giga Drill Activated ***"
+				wait {skmmo::%uuid of player%::excavation::skills::gigadrill::durability}
+				send "&7&l*** Giga Drill Deactivated ***"
+				set {skmmo::%uuid of player%::excavation::skills::gigadrill::use} to false
+				set {skmmo::%uuid of player%::excavation::skills::gigadrill::cooldowner} to now
+on left click:
+	if {skmmo::%uuid of player%::excavation::skills::gigadrill::use} is true:
+		player is holding a shovel:
+			clicked block is grass or mycelium or dirt or gravel or sand or clay block or soul sand:
+				if clicked block is grass or mycelium or dirt:
+					drop 1 of dirt at clicked block
+				if clicked block is sand or gravel or soul sand:
+					drop 1 of clicked block at clicked block
+				if clicked block is clay block:
+					drop 4 of clay at clicked block
+				set clicked block to air
+				add {@excavation.all.reward} to {skmmo::%player%::excavation::xp}
+				chance of {skmmo::%uuid of player%::excavation::skills::double}%:
+					if clicked block is grass or mycelium or dirt:
+						drop 2 of dirt at clicked block
+					if clicked block is sand or gravel or soul sand:
+						drop 2 of event-block at clicked block
+					if clicked block is clay block:
+						drop 6 of clay at clicked block
+				make console execute command "skmmo check %player% Excavation"	
+				
+#	{skmmo::%uuid of player%::excavation::xp} = 0
+#	{skmmo::%uuid of player%::excavation::level::level} = 0
+#	{skmmo::%uuid of player%::excavation::level::amount} = 1100
+#	{skmmo::%uuid of player%::excavation::skills::gigadrill::durability} = 1 second
+#	{skmmo::%uuid of player%::excavation::skills::gigadrill::cooldowntime} = 180
+#	{skmmo::%uuid of player%::excavation::skills::gigadrill::cooldown} = 0
+#	{skmmo::%uuid of player%::excavation::skills::gigadrill::use} = false
+#	{skmmo::%uuid of player%::excavation::skills::double} = 0
